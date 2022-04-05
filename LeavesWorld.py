@@ -1,9 +1,11 @@
 import numpy as np
 import random
 import GUI
+from Randomizer import Randomizer
 
 class LeavesWorld(object):
-    def __init__(self, m = 9, n = 9, p_leaves=20):
+    def __init__(self, rs: np.random.RandomState, m = 7, n = 7, p_leaves=40):
+        self.rs = rs
         self.grid = np.zeros((m,n))
         self.grid_for_reset = np.zeros((m,n))
         self.iterator = 0
@@ -124,11 +126,11 @@ class LeavesWorld(object):
     # genera una composizione random delle foglie nella griglia
     def randomGrid(self) -> None:
         for i in range(self.leaves):
-            a = random.randint(0, self.m - 1)
-            b = random.randint(0, self.n - 1)
+            a = self.rs.randint(0, self.m - 1)
+            b = self.rs.randint(0, self.n - 1)
             while self.grid[a][b] == 1: # controllo che la cella sia vuota
-                a = random.randint(0, self.m - 1)
-                b = random.randint(0, self.n - 1)
+                a = self.rs.randint(0, self.m - 1)
+                b = self.rs.randint(0, self.n - 1)
             self.grid[a][b] = 1
         self.grid_for_reset = self.grid
 
@@ -140,8 +142,8 @@ class LeavesWorld(object):
                 # cerco le foglie nella griglia
                 if self.grid[i][j] == 1:
                     # se nella casella c'è una foglia, genero una nuova posizione
-                    a = random.randint(0, self.m - 1)
-                    b = random.randint(0, self.n - 1)
+                    a = self.rs.randint(0, self.m - 1)
+                    b = self.rs.randint(0, self.n - 1)
                     # se nella nuova posizione vi è presente già una foglia, allora riposiziono la foglia dove era prima, se dove era prima c'è già una foglia
                     # allora genero randomicamente una poszione fino a poterla inserire se no si va a perdere nel vuoto una foglia
                     # non posso controllare usando la vecchia matrice dato che se no scorrendo la matrice 
@@ -149,8 +151,8 @@ class LeavesWorld(object):
                     if newgrid[a][b] == 1:
                         if newgrid[i][j] == 1:
                             while newgrid[a][b] == 1:
-                                a = random.randint(0, self.m - 1)
-                                b = random.randint(0, self.n - 1)
+                                a = self.rs.randint(0, self.m - 1)
+                                b = self.rs.randint(0, self.n - 1)
                             newgrid[a][b] = 1
                         else:
                             newgrid[i][j] = 1
@@ -194,6 +196,6 @@ class LeavesWorld(object):
 
     # genera una azione random
     def actionSpaceSample(self) -> str:
-        return np.random.choice(self.possibleActions)
+        return self.rs.choice(self.possibleActions)
 
 #####

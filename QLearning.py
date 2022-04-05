@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from time import sleep
 import LeavesWorld
 from os import system, name
+from Randomizer import Randomizer
 
 # pulisce la console
 def clear() -> None:
@@ -13,7 +14,8 @@ def clear() -> None:
         _ = system('clear')
 
 class QLearning(object):
-    def __init__(self, env: LeavesWorld.LeavesWorld):
+    def __init__(self, env: LeavesWorld.LeavesWorld, rs: np.random.RandomState):
+        self.rs = rs
         self.env = env
         self.Q = self.newMatrix()
 
@@ -25,7 +27,7 @@ class QLearning(object):
         if in_execution:
             tmp = [i for i, x in enumerate(values) if x == values[action]]
             if len(tmp) > 1:
-                action = np.random.choice(tmp)
+                action = self.rs.choice(tmp)
 
         return actions[action]
 
@@ -64,8 +66,8 @@ class QLearning(object):
     def createDataSet(self, min_lenght = 2, max_lenght = 10, dimension = 100, percentage = 50, verbose=False) -> list:
         dataset = []
         for _ in range(dimension):
-            m = np.random.randint(min_lenght, max_lenght+1)
-            n = np.random.randint(min_lenght, max_lenght+1)
+            m = self.rs.randint(min_lenght, max_lenght+1)
+            n = self.rs.randint(min_lenght, max_lenght+1)
             elem = [m,n,percentage]
             dataset.append(elem)
         if verbose:
@@ -98,53 +100,43 @@ class QLearning(object):
         return Q
 
     # esegue l'agente usando la Q matrix caricata su un dataset di esempio
-    def executeOnDataset(self, dataset: list, render=False, max_steps=1500) -> None:
+    def executeOnDataset(self, dataset: list, max_steps=1500) -> None:
         Q=self.loadQ("Qmatrix")
         evaluation = []
         iterator = 0
         times_stuck = 0
         totLeaves = 0
         reward_list = []
+        step_list = []
         for elem in dataset:
             print(f"Execution on the {iterator+1} element of the dataset")
             iterator += 1
-            tmp = max_steps
             self.env = LeavesWorld.LeavesWorld(elem[0],elem[1],elem[2])
             totLeaves += self.env.leaves
-            if render:
-                self.env.render()
             totReward=0
-            while tmp > 0:
-                action=self.maxAction(Q, self.env.neighboursToInt(self.env.getNeighbours()) , self.env.possibleActions, in_execution=True)
+            steps = 0
+            while steps < max_steps:
+                action=self.maxAction(Q, self.env.neighboursToInt(self.env.getNeighbours()), self.env.possibleActions, in_execution=True)
                 observationNext, reward, done, info = self.env.step(action)
-                tmp -= 1
+                steps += 1
                 totReward += reward
-                if render:
-                    print("Action: "+str(action)+" Reward: "+str(reward)+"\n")
-                    self.env.render()
-                    print(f"Total reward: {totReward}")
                 if done:
-                    #if self.env.leaves == 0:
-                    #    percentage_leaves_sucked = 0
-                    #else:
-                    #    percentage_leaves_sucked = self.env.percentageLeavesSucked
+                    step_list.append(steps)
                     evaluation.append(round(self.env.percentageLeavesSucked, 2))
                     reward_list.append(totReward)
-                    if render:
-                        print(f"Percentage of leaves sucked: {round(self.env.percentageLeavesSucked, 2)}%")
                     break
-                if render:
-                    sleep(0.2)
-                    clear()
-            if tmp == 0:
+            if steps == max_steps:
+                step_list.append(max_steps)
                 evaluation.append(0.0)
                 reward_list.append(totReward)
                 times_stuck += 1
                 print("Agent got stuck, skip iteration")
+        mean_steps = np.mean(step_list)
         mean_reward = np.mean(reward_list)
         mean_percentage = np.mean(evaluation)
         print(f"Times stuck: {times_stuck}")
         print(f"Mean reward: {round(mean_reward, 2)}")
+        print(f"Mean steps: {round(mean_steps, 2)}")
         print(f"Total number of leaves in the dataset: {totLeaves}")
         print(f"Mean percentage of leaves sucked in the experiment: {round(mean_percentage, 2)}%")
 
@@ -158,23 +150,32 @@ class QLearning(object):
                 self.env.render()
             Q=self.loadQ("Qmatrix")
             totReward=0
-            while max_steps > 0:
+            steps = 0
+            #clear()
+            print("Executing...")
+            while steps < max_steps:
                 action=self.maxAction(Q, self.env.neighboursToInt(self.env.getNeighbours()) , self.env.possibleActions, in_execution=True)
                 observationNext, reward, done, info = self.env.step(action)
-                max_steps -= 1
+                steps += 1
                 totReward += reward
                 if not fast:
                     print("Action: "+str(action)+" Reward: "+str(reward)+"\n")
                     self.env.render()
                     print(f"Total reward: {totReward}")
                 if done:
+                    print(f"Total steps: {steps}")
+                    print(f"Total reward: {totReward}")
+                    print(f"Total leaves in the environment: {self.env.leaves}")
+                    print(f"Leaves sucked: {self.env.leaves_sucked}")
                     print(f"Percentage of leaves sucked: {round(self.env.percentageLeavesSucked, 2)}%")
-                    exit()
+                    #exit()
+                    return
                 if not fast:
-                    sleep(0.2)
-                clear()
+                    sleep(0.01)
+                    clear()
             print("Max step reached")
-            exit()
+            #exit()
+            return
         else:
             # se l'esecuzione è in modalità non auto, l'agente esegue le azioni passate 
             # dall'utente oppure basandosi sulla Q matrix caricata se non è stata passata una azione
@@ -243,7 +244,7 @@ class QLearning(object):
             numActions = 0 
             observation = self.env.reset()
             while not done and numActions <= steps :
-                rand = np.random.random()
+                rand = self.rs.random()
                 action = self.maxAction(Q,observation, self.env.possibleActions) if rand < (1-EPS) \
                                                         else self.env.actionSpaceSample()
                 observationNext, reward, done, info = self.env.step(action)
@@ -263,7 +264,8 @@ class QLearning(object):
             if plot:
                 plt.plot(totalRewards)
                 plt.savefig(f"imgs/n_{self.env.n}_m_{self.env.m}_percentuale_foglie_{self.env.p_leaves}_epoche_{epochs}_steps_{steps}_alpha_{ALPHA}_gamma_{GAMMA}_eps_{starting_eps}.png", bbox_inches='tight')
-
+                plt.cla()
+                plt.clf()
         if dataset:
             self.Q = Q.copy()
             return Q
