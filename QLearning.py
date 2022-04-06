@@ -18,6 +18,7 @@ class QLearning(object):
         self.rs = rs
         self.env = env
         self.Q = self.newMatrix()
+        self.plot_iter = 0
 
     # calcola l'azione migliore per uno stato basandosi sulla Q matrix
     def maxAction(self,Q: dict, state: int, actions: list, in_execution=False) -> int:
@@ -81,7 +82,7 @@ class QLearning(object):
         num_training = 1
         Q = {}
         for elem in dataset:
-            self.env = LeavesWorld.LeavesWorld(elem[0],elem[1],elem[2])
+            self.env = LeavesWorld.LeavesWorld(rs=self.rs,m=elem[0],n=elem[1],p_leaves=elem[2])
             print(f"Training number: {num_training}")
             Q = self.training(epochs = 10000, steps = max_steps, dataset=True)
             num_training += 1
@@ -111,7 +112,7 @@ class QLearning(object):
         for elem in dataset:
             print(f"Execution on the {iterator+1} element of the dataset")
             iterator += 1
-            self.env = LeavesWorld.LeavesWorld(elem[0],elem[1],elem[2])
+            self.env = LeavesWorld.LeavesWorld(rs=self.rs,m=elem[0],n=elem[1],p_leaves=elem[2])
             totLeaves += self.env.leaves
             totReward=0
             steps = 0
@@ -260,10 +261,12 @@ class QLearning(object):
                 EPS = 0
             totalRewards[i] = epRewards
 
-        if not dataset:
+        #if not dataset:
+        if dataset:
             if plot:
+                self.plot_iter += 1
                 plt.plot(totalRewards)
-                plt.savefig(f"imgs/n_{self.env.n}_m_{self.env.m}_percentuale_foglie_{self.env.p_leaves}_epoche_{epochs}_steps_{steps}_alpha_{ALPHA}_gamma_{GAMMA}_eps_{starting_eps}.png", bbox_inches='tight')
+                plt.savefig(f"imgs_dataset/{self.plot_iter}_n_{self.env.n}_m_{self.env.m}_percentuale_foglie_{self.env.p_leaves}_epoche_{epochs}_steps_{steps}_alpha_{ALPHA}_gamma_{GAMMA}_eps_{starting_eps}.png", bbox_inches='tight')
                 plt.cla()
                 plt.clf()
         if dataset:
