@@ -30,3 +30,21 @@ class Tester(object):
                 env = LeavesWorld.LeavesWorld(self.rs_execute, 7,7,40)
                 QL = QLearning.QLearning(env, self.rs_execute)
                 QL.execute(max_steps=major_steps_size, fast=True)
+
+    def test_values(self):
+        clear()
+        max_steps = 1000
+        epochs = 30000
+        alpha = 0.1
+        gamma = 0.2
+        eps = 1.0
+        for i in range(self.repetitions):
+            self.rs_train.set_state(self.savedState_train)
+            self.rs_execute.set_state(self.savedState_execute)
+            print(f"------------------------------------------------------\nExecution with {alpha} ALPHA, {gamma*(i)} GAMMA and {eps} EPS\n------------------------------------------------------")
+            env = LeavesWorld.LeavesWorld(self.rs_train, 7,7,40)
+            QL = QLearning.QLearning(env, self.rs_train)
+            QL.training(epochs = epochs, steps = max_steps, ALPHA= alpha, GAMMA = round(gamma*(i),1), EPS = eps, plot=True)
+            env = LeavesWorld.LeavesWorld(self.rs_execute, 7,7,40)
+            QL = QLearning.QLearning(env, self.rs_execute)
+            QL.execute(max_steps=max_steps, fast=True)

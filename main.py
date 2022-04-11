@@ -87,6 +87,9 @@ def main():
     elif command == '7':
         tester = Tester.Tester(10000, 200, 20000, 200, 5)
         tester.test()
+    elif command == '8':
+        tester = Tester.Tester(10000, 200, 20000, 200, 5)
+        tester.test_values()
     else:
         print('End\n')
 

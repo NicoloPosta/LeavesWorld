@@ -261,12 +261,11 @@ class QLearning(object):
                 EPS = 0
             totalRewards[i] = epRewards
 
-        #if not dataset:
-        if dataset:
+        if not dataset:
             if plot:
                 self.plot_iter += 1
                 plt.plot(totalRewards)
-                plt.savefig(f"imgs_dataset/{self.plot_iter}_n_{self.env.n}_m_{self.env.m}_percentuale_foglie_{self.env.p_leaves}_epoche_{epochs}_steps_{steps}_alpha_{ALPHA}_gamma_{GAMMA}_eps_{starting_eps}.png", bbox_inches='tight')
+                plt.savefig(f"imgs/{self.plot_iter}_n_{self.env.n}_m_{self.env.m}_percentuale_foglie_{self.env.p_leaves}_epoche_{epochs}_steps_{steps}_alpha_{ALPHA}_gamma_{GAMMA}_eps_{starting_eps}.png", bbox_inches='tight')
                 plt.cla()
                 plt.clf()
         if dataset:
