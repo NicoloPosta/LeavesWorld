@@ -15,6 +15,7 @@ class Tester(object):
         my_randomizer = Randomizer()
         self.rs_train, self.savedState_train, self.rs_execute, self.savedState_execute = my_randomizer.randomStates()
     
+    # effettua il training e test con valori di epoche e passi diversi
     def test(self):
         clear()
         for i in range(self.repetitions):
@@ -31,6 +32,7 @@ class Tester(object):
                 QL = QLearning.QLearning(env, self.rs_execute)
                 QL.execute(max_steps=major_steps_size, fast=True)
 
+    # effettua il training e test con valori gamma diversi
     def test_values(self):
         clear()
         max_steps = 1000
@@ -45,6 +47,28 @@ class Tester(object):
             env = LeavesWorld.LeavesWorld(self.rs_train, 7,7,40)
             QL = QLearning.QLearning(env, self.rs_train)
             QL.training(epochs = epochs, steps = max_steps, ALPHA= alpha, GAMMA = round(gamma*(i),1), EPS = eps, plot=True)
+            env = LeavesWorld.LeavesWorld(self.rs_execute, 7,7,40)
+            QL = QLearning.QLearning(env, self.rs_execute)
+            QL.execute(max_steps=max_steps, fast=True)
+
+    # effettua il training e test con matrici di grandezza diversa
+    def multi_test(self):
+        clear()
+        print("Start Multitest")
+        max_steps = 1000
+        epochs = 30000
+        alpha = 0.1
+        gamma = 1.0
+        eps = 1.0
+        for i in range(self.repetitions):
+            if i == 0 or i == 1:
+                continue
+            self.rs_train.set_state(self.savedState_train)
+            self.rs_execute.set_state(self.savedState_execute)
+            print(f"------------------------------------------------------\nExecution with matrix of size {i}x{i} \n------------------------------------------------------")
+            env = LeavesWorld.LeavesWorld(self.rs_train, i,i,40)
+            QL = QLearning.QLearning(env, self.rs_train)
+            QL.training(epochs = epochs, steps = max_steps, ALPHA= alpha, GAMMA = gamma, EPS = eps, plot=True)
             env = LeavesWorld.LeavesWorld(self.rs_execute, 7,7,40)
             QL = QLearning.QLearning(env, self.rs_execute)
             QL.execute(max_steps=max_steps, fast=True)

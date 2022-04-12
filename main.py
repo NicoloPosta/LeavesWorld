@@ -61,7 +61,7 @@ def main():
             QL.execute(auto=False, max_steps=max_steps)
         else:
             print(f"Execute\nn = {n}\nm = {m}\nleaves = {percentage}%")
-            QL.execute(max_steps=max_steps, fast=True)
+            QL.execute(max_steps=max_steps, fast=False)
     elif command == '3':
         n, m, percentage, dataset_size, max_steps, QL = getDimensions(mode="train",dataset=True)
         clear()
@@ -72,6 +72,8 @@ def main():
         clear()
         print("Executing")
         QL.executeOnDataset(QL.createDataSet(min_lenght=n, max_lenght=m, percentage=percentage, dimension=dataset_size), max_steps=max_steps)
+    # funzionalità utilizzate per il tesing e il debug
+    # non sono implementate graficamente ma comunque utilizzabili se inserito il giusto numero nel prompt
     elif command == '5':
         my_randomizer = Randomizer()
         rs_train, _, rs_execute, _ = my_randomizer.randomStates()
@@ -90,6 +92,9 @@ def main():
     elif command == '8':
         tester = Tester.Tester(10000, 200, 20000, 200, 5)
         tester.test_values()
+    elif command == '9':
+        tester = Tester.Tester(10000, 200, 20000, 200, 15)
+        tester.multi_test()
     else:
         print('End\n')
 
