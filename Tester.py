@@ -36,7 +36,7 @@ class Tester(object):
     def test_values(self):
         clear()
         max_steps = 1000
-        epochs = 30000
+        epochs = 70000
         alpha = 0.1
         gamma = 0.2
         eps = 1.0
@@ -56,7 +56,7 @@ class Tester(object):
         clear()
         print("Start Multitest")
         max_steps = 1000
-        epochs = 30000
+        epochs = 70000
         alpha = 0.1
         gamma = 1.0
         eps = 1.0

@@ -49,7 +49,7 @@ def main():
         n, m, percentage, max_steps, QL = getDimensions(mode="train")
         clear()
         print(f"Training\nn = {n}\nm = {m}\nLeaves = {percentage}%\nMax steps = {max_steps}")
-        QL.training(epochs = 80000, steps = max_steps, ALPHA= 0.1, GAMMA = 1.0, EPS = 1.0, plot=True)
+        QL.training(epochs = 70000, steps = max_steps, ALPHA= 0.1, GAMMA = 1.0, EPS = 1.0, plot=True)
     elif command == '2':
         clear()
         n, m, percentage, max_steps, QL = getDimensions(mode="execute")
@@ -87,7 +87,7 @@ def main():
         QL = QLearning.QLearning(env, rs=rs_train)
         QL.training(epochs = 10000, steps = 200, ALPHA= 0.1, GAMMA = 1.0, EPS = 1.0, plot=True)
     elif command == '7':
-        tester = Tester.Tester(10000, 200, 20000, 200, 5)
+        tester = Tester.Tester(10000, 200, 20000, 200, 1)
         tester.test()
     elif command == '8':
         tester = Tester.Tester(10000, 200, 20000, 200, 5)

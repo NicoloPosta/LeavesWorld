@@ -126,11 +126,11 @@ class LeavesWorld(object):
     # genera una composizione random delle foglie nella griglia
     def randomGrid(self) -> None:
         for i in range(self.leaves):
-            a = self.rs.randint(0, self.m - 1)
-            b = self.rs.randint(0, self.n - 1)
+            a = self.rs.randint(0, self.m)
+            b = self.rs.randint(0, self.n)
             while self.grid[a][b] == 1: # controllo che la cella sia vuota
-                a = self.rs.randint(0, self.m - 1)
-                b = self.rs.randint(0, self.n - 1)
+                a = self.rs.randint(0, self.m)
+                b = self.rs.randint(0, self.n)
             self.grid[a][b] = 1
         self.grid_for_reset = self.grid
 
@@ -142,8 +142,8 @@ class LeavesWorld(object):
                 # cerco le foglie nella griglia
                 if self.grid[i][j] == 1:
                     # se nella casella c'è una foglia, genero una nuova posizione
-                    a = self.rs.randint(0, self.m - 1)
-                    b = self.rs.randint(0, self.n - 1)
+                    a = self.rs.randint(0, self.m)
+                    b = self.rs.randint(0, self.n)
                     # se nella nuova posizione vi è presente già una foglia, allora riposiziono la foglia dove era prima, se dove era prima c'è già una foglia
                     # allora genero randomicamente una poszione fino a poterla inserire se no si va a perdere nel vuoto una foglia
                     # non posso controllare usando la vecchia matrice dato che se no scorrendo la matrice 
@@ -151,8 +151,8 @@ class LeavesWorld(object):
                     if newgrid[a][b] == 1:
                         if newgrid[i][j] == 1:
                             while newgrid[a][b] == 1:
-                                a = self.rs.randint(0, self.m - 1)
-                                b = self.rs.randint(0, self.n - 1)
+                                a = self.rs.randint(0, self.m)
+                                b = self.rs.randint(0, self.n)
                             newgrid[a][b] = 1
                         else:
                             newgrid[i][j] = 1
